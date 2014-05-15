@@ -1,0 +1,121 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="barcode-label"  attributes="type text rotate alttext scale host port">
+  <template>
+    <style>
+      /* styles for the custom element itself - lowest specificity */
+      :host { display: block; }
+      /* 
+      style if an ancestor has the different class
+      :host(.different) { } 
+      */
+    </style>
+    <img src="{{imgSrc}}"></img>
+  </template>
+  <script>
+    Polymer("barcode-label", {
+      /**
+       * The `type` attribute defines the type of barcode label
+       * 
+       * @attribute type
+       * @type string
+       */
+      type: "code128",
+
+      /**
+       * The `text` attribute defines the text to be bar coded
+       * 
+       * @attribute text
+       * @type string
+       */
+      text: "",
+
+      /**
+       * The `scale` attribute defines the scale of barcode label
+       * An integer value from 1 .. 10. Default is 2.
+       * 
+       * @attribute scale
+       * @type integer
+       */
+      scale: 2,
+
+      /**
+       * The `rotate` attribute defines the rotate of barcode label.
+       * 'N' normal, unrotated (the default)
+       * 'R' clockwise, 90 rotation 
+       * 'L' counter-clockwise, 90 rotation
+       * 'I' inverted, 180 rotation
+       * 
+       * @attribute rotate
+       * @type [N|L|R|I]
+       */
+      rotate: 'N',
+
+      /**
+       * The `alttext` attribute defines the alternatate text of barcode label.
+       * 
+       * @attribute alttext
+       * @type string
+       */
+      alttext: "",
+
+      /**
+       * The `host` attribute defines the barcode image server host name.
+       * 
+       * @attribute host
+       * @type string
+       */
+      host: "128.199.243.212",
+
+      /**
+       * The `port` attribute defines the barcode image service port number.
+       * 
+       * @attribute port
+       * @type integer
+       */
+      port: 3030,
+
+      imgSrc: null,
+
+      updateSrc: function() {
+        console.log('updateSrc', this);
+
+        if(!this.host || !this.text) {
+          this.imgSrc = null;
+          return;
+        }
+
+        var src = "http://" + this.host;
+        if(this.port !== 0 && this.port !== 80)
+          src += ":" + this.port;
+        src += "/?";
+
+        src += "text=" + this.text;
+        src += "&bcid=" + (this.type || 'code128');
+        src += "&scale=" + (this.scale);
+        src += "&rotate=" + (this.rotate || 'N');
+        src += "&alttext=" + (this.alttext || this.text);
+
+        this.imgSrc = src;
+      },
+
+      // element is fully prepared
+      ready: function(){ 
+      },
+      // instance of the element is created
+      created: function() { 
+      },
+      // instance was inserted into the document
+      enteredView: function() {
+        this.updateSrc();
+      },
+      // instance was removed from the document
+      leftView: function() {
+      },
+      // attribute added, removed or updated
+      attributeChanged: function(attrName, oldVal, newVal) {
+        this.updateSrc();
+      }
+    });
+  </script>
+</polymer-element>
